@@ -23,25 +23,45 @@ public class BarkeeperTest {
 
     @Test
     void barkeeperTapsBeer() throws EmptyStockException {
-        //TODO Test that the correct size beer is poured
-        fail("You know what to do");
+        Double expected = PINT;
+        Beer actual = barkeeper.tapBeer(expected);
+        assertThat(actual.getSize()).isCloseTo(expected, within(0.1d));
+        //fail("You know what to do");
     }
 
     @Test
     void barkeeperServesDrinker() throws EmptyStockException, DrinkerTooYoungException, DrinkerFullException {
-        //TODO Test that both the stock is decreased and the drinkers capacity is decreased (drink responsibly ;-))
-        fail("You know what to do");
+        Drinker drinker = new Drinker(3.0, 18);
+        double startCapacity = drinker.getVolumeLeft();
+        double startStock = stock;
+
+        barkeeper.serve(drinker, PINT);
+        double capacityLeft = drinker.getVolumeLeft();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly. assertThat(capacityLeft)
+                    .isCloseTo(startCapacity - PINT, within(.01));
+            softly.assertThat(startStock - PINT).isCloseTo(pub.getStock(), within(0.01));
+        });
+
+        //fail("You know what to do");
     }
     
     @Test
     public void testTabBeerEmptyStock() {
-        //TODO Test that you cannot pour more beer than is in stock
-        fail("You know what to do");        
+        ThrowingCallable code = () -> barkeeper.tapBeer(120.0);
+        assertThatThrownBy(code)
+                .isExactlyInstanceOf(EmptyStockException.class);
+
+        //fail("You know what to do");
     }
     
     @Test
     public void testServeDrinkerTooYoung() {
-        //TODO Test that underage drinkers cannot drink
-        fail("You know what to do");
+        Drinker drinker = new Drinker(5.0, 12);
+        ThrowingCallable code = () -> barkeeper.serve(drinker, PINT);
+        assertThatThrownBy(code)
+                .isExactlyInstanceOf(DrinkerTooYoungException.class);
+        //fail("You know what to do");
     }
 }

@@ -1,6 +1,7 @@
 package pub;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -22,7 +23,10 @@ class PubException extends Exception {
     }
 
     public String getMessageOrDefault() {
-        //TODO do the work to compose the message with params
-         return "";
+        ResourceBundle bundle = ResourceBundle.getBundle("pub.inthepub", Locale.getDefault());
+        String defaultMessage = this.getMessage();
+        String utterance = bundle.getLocale().getLanguage();
+        String message = LanguageUtils.getMessageOrDefault(bundle, defaultMessage, defaultMessage);
+        return MessageFormat.format(message, params);
     }
 }
